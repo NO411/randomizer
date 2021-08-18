@@ -28,33 +28,35 @@ minetest.register_on_mods_loaded(function()
             table.insert(randomizer.can_replace, node)
         end
     end
-    for _, node in pairs(randomizer.can_be_replaced) do
-        -- this is faster then check for all nodes in the randomizer list
-        -- in a loop in the minetest.register_on_generated function
-        minetest.override_item(node, {
-            randomizer = randomizer.can_replace[math.random(#randomizer.can_replace)]
-        })
-    end
 end)
 
-local data = {}
+local rando_lookup
+local function get_lookup()
+    if rando_lookup then
+        return rando_lookup
+    end
+    rando_lookup = {}
+    for k in pairs(minetest.registered_nodes) do
+        local i = minetest.get_content_id(k)
+        rando_lookup[i] = i
+    end
+    local seed = minetest.get_perlin(0, 1, 0, 1):get_3d({ x = 0, y = 0, z = 0 })
+    seed = math.floor((seed - math.floor(seed)) * 2 ^ 32 - 2 ^ 31)
+    local pcg = PcgRandom(seed)
+    for _, node in pairs(randomizer.can_be_replaced) do
+        rando_lookup[minetest.get_content_id(node)] = minetest.get_content_id(
+            randomizer.can_replace[pcg:next(1, #randomizer.can_replace)])
+    end
+    return rando_lookup
+end
 
 minetest.register_on_generated(function(minp, maxp, blockseed)
     local vm, emin, emax = minetest.get_mapgen_object("voxelmanip")
 	local area = VoxelArea:new{ MinEdge = emin, MaxEdge = emax }
-	vm:get_data(data)
-    local data = vm:get_data()
-    for z = minp.z, maxp.z do
-        for y = minp.y, maxp.y do
-            for x = minp.x, maxp.x do
-                local vi = area:index(x, y, z)
-                local node_name = minetest.get_name_from_content_id(data[vi])
-                local node_def = minetest.registered_nodes[node_name]
-                if node_def.randomizer then
-                    data[vi] = minetest.get_content_id(node_def.randomizer)
-                end
-            end
-        end
+	local data = vm:get_data()
+    local rando_lookup = get_lookup()
+    for i in area:iterp(minp, maxp) do
+        data[i] = rando_lookup[data[i]]
     end
     vm:set_data(data)
     vm:write_to_map(true)
