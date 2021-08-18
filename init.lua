@@ -37,15 +37,14 @@ local function get_lookup()
 	end
 	rando_lookup = {}
 	for k in pairs(minetest.registered_nodes) do
-		local i = minetest.get_content_id(k)
+		local i = id(k)
 		rando_lookup[i] = i
 	end
 	local seed = minetest.get_perlin(0, 1, 0, 1):get_3d({ x = 0, y = 0, z = 0 })
 	seed = math.floor((seed - math.floor(seed)) * 2 ^ 32 - 2 ^ 31)
 	local pcg = PcgRandom(seed)
 	for _, node in pairs(randomizer.can_be_replaced) do
-		rando_lookup[minetest.get_content_id(node)] = minetest.get_content_id(
-			randomizer.can_replace[pcg:next(1, #randomizer.can_replace)])
+		rando_lookup[id(node)] = id(randomizer.can_replace[pcg:next(1, #randomizer.can_replace)])
 	end
 	return rando_lookup
 end
