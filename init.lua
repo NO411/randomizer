@@ -37,8 +37,8 @@ local data = {}
 
 minetest.register_on_generated(function(minp, maxp, blockseed)
     local vm, emin, emax = minetest.get_mapgen_object("voxelmanip")
-	local area = VoxelArea:new{ MinEdge = emin, MaxEdge = emax }
-	vm:get_data(data)
+    local area = VoxelArea:new{ MinEdge = emin, MaxEdge = emax }
+    vm:get_data(data)
     local data = vm:get_data()
     for z = minp.z, maxp.z do
         for y = minp.y, maxp.y do
