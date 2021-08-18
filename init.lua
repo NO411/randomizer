@@ -51,13 +51,13 @@ local function get_lookup()
 end
 
 minetest.register_on_generated(function(minp, maxp, blockseed)
-		local vm, emin, emax = minetest.get_mapgen_object("voxelmanip")
-		local area = VoxelArea:new{ MinEdge = emin, MaxEdge = emax }
-		local data = vm:get_data()
-		local rando_lookup = get_lookup()
-		for i in area:iterp(minp, maxp) do
-			data[i] = rando_lookup[data[i]]
-		end
-		vm:set_data(data)
-		vm:write_to_map(true)
+	local vm, emin, emax = minetest.get_mapgen_object("voxelmanip")
+	local area = VoxelArea:new{ MinEdge = emin, MaxEdge = emax }
+	local data = vm:get_data()
+	local rando_lookup = get_lookup()
+	for i in area:iterp(minp, maxp) do
+		data[i] = rando_lookup[data[i]]
+	end
+	vm:set_data(data)
+	vm:write_to_map(true)
 end)
