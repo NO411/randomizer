@@ -14,7 +14,8 @@ local function can_be_replaced(node, def)
 end
 
 local function can_replace(node, def)
-    local allowed = def.drawtype == "normal" and def.groups.not_in_creative_inventory ~= 1
+    local groups = def.groups
+    local allowed = def.drawtype == "normal" and groups.not_in_creative_inventory ~= 1 and groups.falling_node ~= 1
     return allowed
 end
 
