@@ -8,7 +8,7 @@ randomizer = {
 local id = minetest.get_content_id
 
 local function can_be_replaced(node, def)
-	local allowed = node ~= "mcl_core:bedrock" and node ~= "air" and node ~= "mcl_mobspawners:spawner"
+	local allowed = node ~= "mcl_core:bedrock" and node ~= "air"
 	and def.drawtype ~= "liquid" and def.drawtype ~= "flowingliquid"
 	return allowed
 end
